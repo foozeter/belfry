@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+     android:ordering="together">
+
+    <objectAnimator
+            android:duration="500"
+            android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+        <propertyValuesHolder
+                android:propertyName="yFraction"
+                android:valueFrom="0.0"
+                android:valueTo="1.0"/>
+        <propertyValuesHolder
+                android:propertyName="cornerRadiusFraction"
+                android:valueFrom="0.0"
+                android:valueTo="1.0"/>
+        <propertyValuesHolder
+                android:propertyName="backgroundColor"
+                android:valueFrom="#ffffff"
+                android:valueTo="#0e0e0e"
+                android:valueType="colorType"/>
+    </objectAnimator>
+
+</set>

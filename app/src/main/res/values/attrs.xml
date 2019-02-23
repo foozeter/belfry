@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BottomPanel">
+        <attr name="belfry_cornerRadius" format="dimension"/>
+        <attr name="belfry_backgroundColor" format="color"/>
+        <attr name="belfry_peekHeight" format="dimension"/>
+    </declare-styleable>
+</resources>

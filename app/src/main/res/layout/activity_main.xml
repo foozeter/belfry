@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00ff00"
+        android:id="@+id/rootView"
+        tools:context=".MainActivity">
+
+    <com.jamjamucho.belfry.BottomPanel
+            android:id="@+id/bottomPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:belfry_cornerRadius="-16dp"
+            app:belfry_backgroundColor="#0e0e0e"
+            app:belfry_peekHeight="72dp"
+            android:paddingTop="16dp">
+
+        <!-- APP BAR -->
+        <FrameLayout
+                android:id="@+id/appBar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="#0e0e0e">
+            <ImageView
+                    style="@style/AppBarIcon"
+                    android:id="@+id/menuIcon"
+                    android:src="@drawable/ic_menu"
+                    android:contentDescription="Main menu"/>
+            <ImageView
+                    style="@style/AppBarIcon"
+                    android:id="@+id/optionsIcon"
+                    android:src="@drawable/ic_options"
+                    android:layout_gravity="end"
+                    android:contentDescription="Options"/>
+        </FrameLayout>
+
+    </com.jamjamucho.belfry.BottomPanel>
+
+    <Button
+            android:id="@+id/primaryButton"
+            android:layout_width="128dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/home_round_rectangle_button_background"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="32dp"/>
+
+    <!-- INLINE ANIMATORS -->
+
+    <com.jamjamucho.jam.inline.Config
+            style="@style/JamInline"
+            app:jam_defaultStateList="@xml/main_animator_default_state_list"/>
+
+    <com.jamjamucho.jam.inline.InlineAnimatorGroup
+            style="@style/JamInline"
+            app:jam_trigger="@id/menuIcon"
+            app:jam_stateName="isPanelExpanded"
+            app:jam_necessaryStateCondition="no"
+            app:jam_nextState="yes"
+            app:jam_allowInterruption="false"
+            app:jam_triggeredByClick="true">
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/bottomPanel"
+                app:jam_animator="@animator/main_bottom_panel_sliding_up"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/menuIcon"
+                app:jam_animator="@animator/change_app_bar_icon_color_on_the_way"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/optionsIcon"
+                app:jam_animator="@animator/change_app_bar_icon_color_on_the_way"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/appBar"
+                app:jam_animator="@animator/change_app_bar_background_color_on_the_way"/>
+
+    </com.jamjamucho.jam.inline.InlineAnimatorGroup>
+
+    <com.jamjamucho.jam.inline.InlineAnimatorGroup
+            style="@style/JamInline"
+            app:jam_trigger="@id/menuIcon"
+            app:jam_stateName="isPanelExpanded"
+            app:jam_necessaryStateCondition="yes"
+            app:jam_nextState="no"
+            app:jam_allowInterruption="false"
+            app:jam_triggeredByClick="true">
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/bottomPanel"
+                app:jam_animator="@animator/main_bottom_panel_sliding_down"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/menuIcon"
+                app:jam_animator="@animator/main_change_app_bar_icon_color_on_the_way_back"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/optionsIcon"
+                app:jam_animator="@animator/main_change_app_bar_icon_color_on_the_way_back"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/appBar"
+                app:jam_animator="@animator/change_app_bar_background_color_on_the_way_back"/>
+
+    </com.jamjamucho.jam.inline.InlineAnimatorGroup>
+
+</FrameLayout>

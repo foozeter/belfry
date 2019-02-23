@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BaseInlineAnimator">
+        <attr name="jam_trigger" format="reference"/>
+        <attr name="jam_allowInterruption" format="boolean"/>
+        <attr name="jam_reverseAtInterruption" format="boolean"/>
+        <attr name="jam_triggeredByClick" format="boolean"/>
+        <attr name="jam_triggeredByLongClick" format="boolean"/>
+        <attr name="jam_stateName" format="string"/>
+        <attr name="jam_necessaryStateCondition" format="string"/>
+        <attr name="jam_nextState" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="InlineAnimator">
+        <attr name="jam_target" format="reference"/>
+        <attr name="jam_animator" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="Config">
+        <attr name="jam_defaultStateList" format="reference"/>
+    </declare-styleable>
+</resources>
