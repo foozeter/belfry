@@ -24,17 +24,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="#0e0e0e">
-            <ImageView
+            <com.jamjamucho.belfry.AnimationMenuIcon
                     style="@style/AppBarIcon"
-                    android:id="@+id/menuIcon"
-                    android:src="@drawable/ic_menu"
-                    android:contentDescription="Main menu"/>
-            <ImageView
+                    android:id="@+id/menuIcon"/>
+            <com.jamjamucho.belfry.AnimationOptionsIcon
                     style="@style/AppBarIcon"
                     android:id="@+id/optionsIcon"
-                    android:src="@drawable/ic_options"
-                    android:layout_gravity="end"
-                    android:contentDescription="Options"/>
+                    android:layout_gravity="end"/>
         </FrameLayout>
 
     </com.jamjamucho.belfry.BottomPanel>
@@ -114,5 +110,90 @@
                 app:jam_animator="@animator/change_app_bar_background_color_on_the_way_back"/>
 
     </com.jamjamucho.jam.inline.InlineAnimatorGroup>
+
+
+
+
+    <com.jamjamucho.jam.inline.InlineAnimatorGroup
+            style="@style/JamInline"
+            app:jam_trigger="@id/optionsIcon"
+            app:jam_stateName="isPanelExpanded"
+            app:jam_necessaryStateCondition="no"
+            app:jam_nextState="yes"
+            app:jam_allowInterruption="false"
+            app:jam_triggeredByClick="true">
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/bottomPanel"
+                app:jam_animator="@animator/main_bottom_panel_sliding_up"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/menuIcon"
+                app:jam_animator="@animator/change_app_bar_icon_color_on_the_way"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/optionsIcon"
+                app:jam_animator="@animator/change_app_bar_icon_color_on_the_way"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/appBar"
+                app:jam_animator="@animator/change_app_bar_background_color_on_the_way"/>
+
+    </com.jamjamucho.jam.inline.InlineAnimatorGroup>
+
+    <com.jamjamucho.jam.inline.InlineAnimatorGroup
+            style="@style/JamInline"
+            app:jam_trigger="@id/optionsIcon"
+            app:jam_stateName="isPanelExpanded"
+            app:jam_necessaryStateCondition="yes"
+            app:jam_nextState="no"
+            app:jam_allowInterruption="false"
+            app:jam_triggeredByClick="true">
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/bottomPanel"
+                app:jam_animator="@animator/main_bottom_panel_sliding_down"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/menuIcon"
+                app:jam_animator="@animator/main_change_app_bar_icon_color_on_the_way_back"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/optionsIcon"
+                app:jam_animator="@animator/main_change_app_bar_icon_color_on_the_way_back"/>
+
+        <com.jamjamucho.jam.inline.InlineAnimator
+                style="@style/JamInline"
+                app:jam_target="@id/appBar"
+                app:jam_animator="@animator/change_app_bar_background_color_on_the_way_back"/>
+
+    </com.jamjamucho.jam.inline.InlineAnimatorGroup>
+
+    <com.jamjamucho.jam.inline.InlineAnimatorGroup
+            style="@style/JamInline"
+            app:jam_trigger="@id/menuIcon"
+            app:jam_stateName="isCloseIcon"
+            app:jam_allowInterruption="false"
+            app:jam_necessaryStateCondition="no"
+            app:jam_nextState="yes"
+            app:jam_triggeredByClick="true"/>
+
+    <com.jamjamucho.jam.inline.InlineAnimator
+            style="@style/JamInline"
+            app:jam_target="@id/menuIcon"
+            app:jam_trigger="@id/menuIcon"
+            app:jam_animator="@animator/property_progress_declining"
+            app:jam_stateName="isCloseIcon"
+            app:jam_allowInterruption="false"
+            app:jam_necessaryStateCondition="yes"
+            app:jam_nextState="no"
+            app:jam_triggeredByClick="true"/>
 
 </FrameLayout>

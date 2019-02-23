@@ -19,8 +19,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\hayashibambi\Pictures\google material icons\rounded\more_vert\drawable-xxxhdpi\round_more_vert_black_24.png" />
-                                      <entry key="outputName" value="ic_options" />
+                                      <entry key="imageAsset" value="C:\Users\hayashibambi\Pictures\google material icons\rounded\close\res\drawable-xxxhdpi\round_close_black_24.png" />
+                                      <entry key="outputName" value="ic_close" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="ffffff" />
                                     </map>
