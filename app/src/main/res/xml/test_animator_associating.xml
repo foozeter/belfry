@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animatorAssociating>
+
+    <states>
+        <state name="isPanelExpanded" default="no"/>
+    </states>
+
+    <trigger trigger="@id/appBar"
+             animations="slidingBottomPanel"
+             stateName="isPanelExpanded"
+             necessaryStateCondition="no"
+             nextState="yes"/>
+
+    <animations id="slidingBottomPanel"
+                allowInterruption="false"
+                reverseAtInterruption="true">
+        <ref binding="bottomPanelExit"/>
+        <ref binding="bottomPanelEnter"/>
+    </animations>
+
+    <binding id="bottomPanelExit"
+            target="@id/bottomPanel"
+            animator="@animator/property_progress_declining"/>
+
+    <binding id="bottomPanelEnter"
+            target="@id/bottomPanel"
+            animator="@animator/property_progress_growing"/>
+
+</animatorAssociating>

@@ -3,18 +3,20 @@ package com.jamjamucho.jam.internal
 import android.view.View
 import android.view.ViewGroup
 import com.jamjamucho.jam.Jam
+import com.jamjamucho.jam.inline.Animation
 import com.jamjamucho.jam.inline.Config
-import com.jamjamucho.jam.inline.InlineAnimator
-import com.jamjamucho.jam.inline.InlineAnimatorGroup
+import com.jamjamucho.jam.inline.Trigger
 import java.util.*
 
 internal class Builder {
 
     fun createFrom(layout: View): Jam {
 
-        val targets = mutableListOf<View>()
-        val triggers = mutableListOf<View>()
-        val animators = mutableListOf<InlineAnimator>()
+        val targetViews = mutableListOf<View>()
+        val triggerViews = mutableListOf<View>()
+//        val animators = mutableListOf<InlineAnimator>()
+        val animations = mutableListOf<Animation>()
+        val triggers = mutableListOf<Trigger>()
         val configs = mutableListOf<Config>()
 
         // Collect InlineAnimators
@@ -26,23 +28,33 @@ internal class Builder {
                     recycleBin.add(child)
                 }
 
-                is InlineAnimator -> {
-                    animators.add(child)
+//                is InlineAnimator -> {
+//                    animators.add(child)
+//                    recycleBin.add(child)
+//                }
+
+//                is InlineAnimatorGroup -> {
+//                    animators.addAll(child.obtainChildren())
+//                    recycleBin.add(child)
+//                }
+//
+                is Animation -> {
+                    animations.add(child)
                     recycleBin.add(child)
                 }
 
-                is InlineAnimatorGroup -> {
-                    animators.addAll(child.obtainChildren())
+                is Trigger -> {
+                    triggers.add(child)
                     recycleBin.add(child)
                 }
             }
         }
 
-        val targetIds = animators
+        val targetIds = animations
             .map { it.target }
             .toMutableList()
 
-        val triggerIds = animators
+        val triggerIds = triggers
             .mapNotNull { it.trigger }
             .toMutableList()
 
@@ -50,12 +62,12 @@ internal class Builder {
         layout.fullScan {
 
             if (targetIds.contains(it.id)) {
-                targets.add(it)
+                targetViews.add(it)
                 targetIds.remove(it.id)
             }
 
             if (triggerIds.contains(it.id)) {
-                triggers.add(it)
+                triggerViews.add(it)
                 triggerIds.remove(it.id)
             }
 
@@ -63,7 +75,7 @@ internal class Builder {
             return@fullScan targetIds.isEmpty() && triggerIds.isEmpty()
         }
 
-        return Jam(triggers, targets, animators, configs)
+        return Jam(triggerViews, targetViews, triggers, animations, configs)
     }
 
     private fun View.scan(onChild: (child: View, recycleBin: MutableList<View>) -> Unit) {

@@ -4,8 +4,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import com.jamjamucho.jam.helper.StateListLoader
+import com.jamjamucho.jam.inline.Animation
 import com.jamjamucho.jam.inline.Config
-import com.jamjamucho.jam.inline.InlineAnimator
+import com.jamjamucho.jam.inline.Trigger
 import com.jamjamucho.jam.internal.Builder
 import com.jamjamucho.jam.internal.Constant
 import com.jamjamucho.jam.internal.StateHolder
@@ -14,12 +15,16 @@ import com.jamjamucho.jam.internal.TriggerEvent
 class Jam internal constructor(
     triggerViews: List<View>,
     targetViews: List<View>,
-    animatorViews: List<InlineAnimator>,
+    triggers: List<Trigger>,
+    animations: List<Animation>,
     configs: List<Config>) {
 
-    private val animators = mutableListOf<AnimatorHolder>()
+//    private val animators = mutableListOf<AnimatorHolder>()
     private val clickObservers = mutableMapOf<Int, OnClickObserver>()
     private val longClickObservers = mutableMapOf<Int, OnLongClickObserver>()
+
+    private val animations: List<AnimationHolder>
+    private val triggers: List<TriggerHolder>
 
     init {
 
@@ -27,20 +32,23 @@ class Jam internal constructor(
             configs.forEach { putAll(obtainDefaultStatesFrom(it)) }
         }
 
-        val targets = targetViews
-            .associateBy { it.id }
-
-        val sharedStates = animatorViews
+        val sharedStates = triggers
             .mapNotNull { it.stateName }
             .distinct()
             .associate { it to StateHolder(defaultStates[it] ?: Constant.DEFAULT_STATE) }
 
-        animatorViews.forEach {
-            animators.add(AnimatorHolder(
-                it,
-                targets[it.target],
-                sharedStates[it.stateName]))
-        }
+//        animatorViews.forEach {
+//            animators.add(AnimatorHolder(
+//                it,
+//                targets[it.target],
+//                sharedStates[it.stateName]))
+//        }
+
+        val targets = targetViews.associateBy { it.id }
+
+        this.animations = animations.map { AnimationHolder(it, targets[it.target]) }
+
+        this.triggers = triggers.map { TriggerHolder(it, this, sharedStates[it.stateName]) }
 
         triggerViews.forEach {
             val clickObserver = OnClickObserver()
@@ -75,14 +83,17 @@ class Jam internal constructor(
     }
 
     fun addAnimatorListener(animatorId: Int, listener: AnimatorHolderListener) {
-        animators.find { it.id == animatorId }?.addListener(listener)
+//        animators.find { it.id == animatorId }?.addListener(listener)
     }
 
     fun removeAnimatorListener(animatorId: Int, listener: AnimatorHolderListener) {
-        animators.find { it.id == animatorId }?.removeListener(listener)
+//        animators.find { it.id == animatorId }?.removeListener(listener)
     }
 
-    fun findAnimator(animatorId: Int) = animators.find { it.id == animatorId }
+//    fun findAnimator(animatorId: Int) = animators.find { it.id == animatorId }
+
+    internal fun findAnimations(name: String)
+            = animations.filter { it.name == name }
 
     private fun onClickListener(listener: (view: View) -> Unit)
             = object: View.OnClickListener {
@@ -107,7 +118,8 @@ class Jam internal constructor(
 
         override fun onClick(view: View) {
             additionalListener?.onClick(view)
-            animators.forEach { it.fire(view, TriggerEvent.ON_CLICK) }
+//            animators.forEach { it.fire(view, TriggerEvent.ON_CLICK) }
+            triggers.forEach { it.fire(view, TriggerEvent.ON_CLICK) }
         }
     }
 
@@ -117,7 +129,8 @@ class Jam internal constructor(
 
         override fun onLongClick(view: View): Boolean {
             additionalListener?.onLongClick(view)
-            animators.forEach { it.fire(view, TriggerEvent.ON_LONG_CLICK) }
+//            animators.forEach { it.fire(view, TriggerEvent.ON_LONG_CLICK) }
+            triggers.forEach { it.fire(view, TriggerEvent.ON_LONG_CLICK) }
             return true
         }
     }

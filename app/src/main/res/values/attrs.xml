@@ -5,4 +5,8 @@
         <attr name="belfry_backgroundColor" format="color"/>
         <attr name="belfry_peekHeight" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="abcdef">
+        <attr name="abcdef_source" format="reference"/>
+    </declare-styleable>
 </resources>
