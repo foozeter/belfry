@@ -3,7 +3,7 @@ package com.jamjamucho.belfry
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.jamjamucho.smile.AnimatorAssociatingInflater
+import com.jamjamucho.smile.parse.AnimatorAssociatingInflater
 
 class MainActivity : AppCompatActivity() {
 

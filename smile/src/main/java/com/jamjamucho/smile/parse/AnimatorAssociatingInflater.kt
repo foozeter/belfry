@@ -1,10 +1,9 @@
-package com.jamjamucho.smile
+package com.jamjamucho.smile.parse
 
 import android.content.Context
 import android.content.res.Resources
 import android.content.res.XmlResourceParser
 import android.support.annotation.XmlRes
-import com.jamjamucho.smile.parse.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 
@@ -140,7 +139,9 @@ class AnimatorAssociatingInflater(
         }
 
         trigger ?: onAttributeNotFound(this, TRIGGER)
-        animations ?: onAttributeNotFound(this, ANIMATIONS)
+        animations ?: onAttributeNotFound(this,
+            ANIMATIONS
+        )
 
         return TriggerBean(trigger!!, animations!!,
             stateName, necessaryStateCondition, nextState)
