@@ -10,6 +10,9 @@ import org.xmlpull.v1.XmlPullParserException
 class AnimatorAssociatingInflater(
     private val context: Context) {
 
+    // Convert a string id to a integer id for better performance.
+    private val idm = IdMapper<String>()
+
     companion object {
         private const val ID = "id"
         private const val REF = "ref"
@@ -27,11 +30,14 @@ class AnimatorAssociatingInflater(
         private const val DEFAULT = "default"
         private const val STATE = "state"
         private const val STATES = "states"
+        private const val TRIGGERED_BY_CLICK = "triggeredByClick"
+        private const val TRIGGERED_BY_LONG_CLICK = "triggeredByLongClick"
     }
 
     @Throws(Resources.NotFoundException::class)
     fun inflate(@XmlRes xml: Int): AnimatorAssociatingBean {
         try {
+            idm.reset()
             val parser = context.resources.getXml(xml)
             parser.skipToFirst()
             return parser.inflateAnimatorAssociating()
@@ -51,17 +57,17 @@ class AnimatorAssociatingInflater(
      * </animatorAssociating>
      */
     private fun XmlResourceParser.inflateAnimatorAssociating(): AnimatorAssociatingBean {
-        val states = mutableListOf<StatesBean>()
+        var states = mutableListOf<StatesBean>()
         val triggers = mutableListOf<TriggerBean>()
-        val animations = mutableListOf<AnimationsBean>()
-        val bindings = mutableListOf<BindingBean>()
+        val animations = mutableMapOf<Int, AnimationsBean>()
+        val bindings = mutableMapOf<Int, BindingBean>()
 
         forEachChildNode { name ->
             when (name) {
                 STATES -> states.add(inflateStates())
                 TRIGGER -> triggers.add(inflateTrigger())
-                ANIMATIONS -> animations.add(inflateAnimations())
-                BINDING -> bindings.add(inflateBinding())
+                ANIMATIONS -> animations.putWith(inflateAnimations()) { it.id }
+                BINDING -> bindings.putWith(inflateBinding()) { it.id }
                 else -> onUnknownChildFound(this, name)
             }
         }
@@ -107,7 +113,7 @@ class AnimatorAssociatingInflater(
         name ?: onAttributeNotFound(this, NAME)
         default ?: onAttributeNotFound(this, DEFAULT)
 
-        return StateBean(name!!, default!!)
+        return StateBean(idm.map(name!!), idm.map(default!!))
     }
 
     /**
@@ -118,6 +124,8 @@ class AnimatorAssociatingInflater(
      *   stateName="string" (optional)
      *   necessaryStateCondition="string" (optional)
      *   nextState="string" (optional)
+     *   triggeredByClick="boolean" (default:false)
+     *   triggeredByLongClick="boolean" (default:false)
      *   />
      */
     private fun XmlResourceParser.inflateTrigger(): TriggerBean {
@@ -126,6 +134,8 @@ class AnimatorAssociatingInflater(
         var stateName: String? = null
         var necessaryStateCondition: String? = null
         var nextState: String? = null
+        var triggeredByClick = false
+        var triggeredByLongClick = false
 
         forEachAttribute { index, name ->
             when (name) {
@@ -134,6 +144,8 @@ class AnimatorAssociatingInflater(
                 STATE_NAME -> stateName = getAttributeValue(index)
                 NECESSARY_STATE_CONDITION -> necessaryStateCondition = getAttributeValue(index)
                 NEXT_STATE -> nextState = getAttributeValue(index)
+                TRIGGERED_BY_CLICK -> triggeredByClick = getAttributeBooleanValue(index, false)
+                TRIGGERED_BY_LONG_CLICK -> triggeredByLongClick = getAttributeBooleanValue(index, false)
                 else -> onUnknownAttributeFound(this, name)
             }
         }
@@ -143,8 +155,14 @@ class AnimatorAssociatingInflater(
             ANIMATIONS
         )
 
-        return TriggerBean(trigger!!, animations!!,
-            stateName, necessaryStateCondition, nextState)
+        return TriggerBean(
+            trigger!!,
+            idm.map(animations!!),
+            if (stateName != null) idm.map(stateName!!) else null,
+            if (necessaryStateCondition != null) idm.map(necessaryStateCondition!!) else null,
+            if (nextState != null) idm.map(nextState!!) else null,
+            triggeredByClick,
+            triggeredByLongClick)
     }
 
     /**
@@ -180,7 +198,7 @@ class AnimatorAssociatingInflater(
         id ?: onAttributeNotFound(this, ID)
 
         return AnimationsBean(
-            id!!, allowInterruption,
+            idm.map(id!!), allowInterruption,
             reverseAtInterruption, refs)
     }
 
@@ -208,7 +226,7 @@ class AnimatorAssociatingInflater(
         target ?: onAttributeNotFound(this, TARGET)
         animator ?: onAttributeNotFound(this, ANIMATOR)
 
-        return BindingBean(id!!, target!!, animator!!)
+        return BindingBean(idm.map(id!!), target!!, animator!!)
     }
 
     /**
@@ -226,7 +244,7 @@ class AnimatorAssociatingInflater(
 
         binding ?: onAttributeNotFound(this, BINDING)
 
-        return RefBean(binding!!)
+        return RefBean(idm.map(binding!!))
     }
 
     private fun XmlResourceParser.forEachAttribute(
@@ -249,6 +267,10 @@ class AnimatorAssociatingInflater(
     private fun XmlResourceParser.skipToFirst() {
         while (eventType != XmlPullParser.START_TAG
             && eventType != XmlPullParser.END_DOCUMENT) next()
+    }
+
+    private fun <T, U> MutableMap<T, U>.putWith(value: U, keySelector: (value: U) -> T) {
+        put(keySelector(value), value)
     }
 
     @Throws(XmlPullParserException::class)

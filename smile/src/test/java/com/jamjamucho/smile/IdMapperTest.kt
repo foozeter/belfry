@@ -1,5 +1,6 @@
 package com.jamjamucho.smile
 
+import com.jamjamucho.smile.parse.IdMapper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -27,7 +28,7 @@ class IdMapperTest {
         assertEquals(true, id2 == id5)
     }
 
-    private fun printId(id: Long, string: String) {
+    private fun printId(id: Int, string: String) {
         println("$string.id = $id")
     }
 }

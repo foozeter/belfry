@@ -4,7 +4,9 @@ import android.support.annotation.IdRes
 
 data class TriggerBean(
     @IdRes val trigger: Int,
-    val animations: String,
-    val stateName: String?,
-    val necessaryStateCondition: String?,
-    val nextState: String?)
+    val animations: Int,
+    val stateName: Int?,
+    val necessaryStateCondition: Int?,
+    val nextState: Int?,
+    val triggeredByClick: Boolean,
+    val triggeredByLongClick: Boolean)

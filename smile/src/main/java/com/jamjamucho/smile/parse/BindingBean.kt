@@ -4,6 +4,6 @@ import android.support.annotation.AnimatorRes
 import android.support.annotation.IdRes
 
 data class BindingBean(
-    val id: String,
+    val id: Int,
     @IdRes val target: Int,
     @AnimatorRes val animator: Int)

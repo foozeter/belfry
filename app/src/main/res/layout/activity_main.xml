@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:belfry_cornerRadius="-16dp"
-            app:belfry_backgroundColor="#0e0e0e"
+            app:belfry_backgroundColor="#ffffff"
             app:belfry_peekHeight="72dp"
             android:paddingTop="16dp">
 
@@ -23,7 +23,7 @@
                 android:id="@+id/appBar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="#0e0e0e">
+                android:background="#ffffff">
             <com.jamjamucho.belfry.AnimationMenuIcon
                     style="@style/AppBarIcon"
                     android:id="@+id/menuIcon"/>

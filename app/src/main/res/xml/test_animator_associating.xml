@@ -5,25 +5,100 @@
         <state name="isPanelExpanded" default="no"/>
     </states>
 
-    <trigger trigger="@id/appBar"
-             animations="slidingBottomPanel"
+    <trigger trigger="@id/menuIcon"
+             triggeredByClick="true"
+             animations="showMenu"
              stateName="isPanelExpanded"
              necessaryStateCondition="no"
              nextState="yes"/>
 
-    <animations id="slidingBottomPanel"
+    <trigger trigger="@id/menuIcon"
+             triggeredByClick="true"
+             animations="hideMenu"
+             stateName="isPanelExpanded"
+             necessaryStateCondition="yes"
+             nextState="no"/>
+
+    <trigger trigger="@id/optionsIcon"
+             animations="moveToOptions"
+             triggeredByClick="true"
+             stateName="isPanelExpanded"
+             necessaryStateCondition="yes"/>
+
+    <animations id="moveToOptions"
                 allowInterruption="false"
                 reverseAtInterruption="true">
-        <ref binding="bottomPanelExit"/>
-        <ref binding="bottomPanelEnter"/>
+        <ref binding="closeIconToMenuIcon"/>
+        <ref binding="optionsIconToCloseIcon"/>
     </animations>
 
-    <binding id="bottomPanelExit"
-            target="@id/bottomPanel"
-            animator="@animator/property_progress_declining"/>
 
-    <binding id="bottomPanelEnter"
+    <animations id="showMenu"
+                allowInterruption="false"
+                reverseAtInterruption="true">
+        <ref binding="expandBottomPanel"/>
+        <ref binding="darkenMenuIcon"/>
+        <ref binding="darkenOptionsIcon"/>
+        <ref binding="lightenAppBar"/>
+        <ref binding="menuIconToCloseIcon"/>
+    </animations>
+
+    <animations id="hideMenu"
+                allowInterruption="false"
+                reverseAtInterruption="true">
+        <ref binding="collapseBottomPanel"/>
+        <ref binding="lightenMenuIcon"/>
+        <ref binding="lightenOptionsIcon"/>
+        <ref binding="darkenAppBar"/>
+        <ref binding="closeIconToMenuIcon"/>
+    </animations>
+
+    <binding id="expandBottomPanel"
             target="@id/bottomPanel"
-            animator="@animator/property_progress_growing"/>
+            animator="@animator/bottom_panel_expand"/>
+
+    <binding id="collapseBottomPanel"
+            target="@id/bottomPanel"
+            animator="@animator/bottom_panel_collapse"/>
+
+    <binding id="lightenMenuIcon"
+            target="@id/menuIcon"
+            animator="@animator/prop_color_filter_lighten"/>
+
+    <binding id="darkenMenuIcon"
+            target="@id/menuIcon"
+            animator="@animator/prop_color_filter_darken"/>
+
+    <binding id="lightenOptionsIcon"
+            target="@id/optionsIcon"
+            animator="@animator/prop_color_filter_lighten"/>
+
+    <binding id="darkenOptionsIcon"
+            target="@id/optionsIcon"
+            animator="@animator/prop_color_filter_darken"/>
+
+    <binding id="lightenAppBar"
+            target="@id/appBar"
+            animator="@animator/prop_background_color_lighten"/>
+
+    <binding id="darkenAppBar"
+            target="@id/appBar"
+            animator="@animator/prop_background_color_darken"/>
+
+    <binding id="menuIconToCloseIcon"
+            target="@id/menuIcon"
+            animator="@animator/prop_progress_growing"/>
+
+    <binding id="closeIconToMenuIcon"
+            target="@id/menuIcon"
+            animator="@animator/prop_progress_declining"/>
+
+    <binding id="optionsIconToCloseIcon"
+             target="@id/optionsIcon"
+             animator="@animator/prop_progress_growing"/>
+
+    <binding id="closeIconToOptionsIcon"
+             target="@id/optionsIcon"
+             animator="@animator/prop_progress_declining"/>
 
 </animatorAssociating>
