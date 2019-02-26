@@ -43,4 +43,35 @@ class ExampleUnitTest {
             println("cast failed")
         } else println("cast successful")
     }
+
+    @Test
+    fun compactTest() {
+        val values = mutableListOf(0, 1, 2, -3, 4, 2, 1, 1, 0, -1, -5)
+
+        println("before -> $values")
+
+        values.compact { a, b ->
+            if (a * b > 0 || (a == 0 && b == 0)) a + b
+            else null
+        }
+
+        println("after -> $values")
+    }
+
+    private fun <T> MutableList<T>.compact(merge: (a: T, b: T) -> T?) {
+        var start = size - 1
+        while (0 < start) {
+            var index = start - 1
+            while (0 <= index) {
+                val merged = merge(get(start), get(index))
+                if (merged != null) {
+                    set(start, merged)
+                    removeAt(index)
+                    --start
+                }
+                --index
+            }
+            --start
+        }
+    }
 }

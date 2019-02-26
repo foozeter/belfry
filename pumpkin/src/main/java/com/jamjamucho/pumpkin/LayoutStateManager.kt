@@ -14,26 +14,36 @@ class LayoutStateManager private constructor(
 
     private val layout = WeakReference(layout)
 
-    private val targets = mutableMapOf<Int, WeakReference<View>>()
-        .apply {
+    private val targets: Map<Int, WeakReference<View>>
 
-            val targetIds = states.values
-                .flatMap { it.getTargetIds() }
-                .toMutableSet()
+    init {
 
-            // Collect target views.
-            layout.breadthFirstSearch {
-                if (targetIds.contains(it.id)) {
-                    put(it.id, WeakReference(it))
-                    targetIds.remove(it.id)
+        states.forEach { it.value.setup() }
+
+        val targetIds = states.values
+            .flatMap { it.getTargetIds() }
+            .toMutableSet()
+
+        targets = mutableMapOf<Int, WeakReference<View>>()
+            .apply {
+                // Collect target views.
+                layout.breadthFirstSearch {
+                    if (targetIds.contains(it.id)) {
+                        put(it.id, WeakReference(it))
+                        targetIds.remove(it.id)
+                    }
+                    return@breadthFirstSearch targetIds.isEmpty()
                 }
-                return@breadthFirstSearch targetIds.isEmpty()
             }
-        }
-        .toMap()
+            .toMap()
+    }
 
     fun go(state: KClass<out LayoutState>) {
-        states[state]?.performTransition(this)
+        states[state]?.applyChanges(this)
+    }
+
+    fun goImmediately(state: KClass<out LayoutState>) {
+        states[state]?.applyChangesWithoutAnimation(this)
     }
 
     internal fun findViewBy(id: Int) = targets[id]?.get()

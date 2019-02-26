@@ -4,47 +4,48 @@ import android.support.transition.ChangeBounds
 import android.support.transition.Fade
 import android.support.v4.view.ViewCompat
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.jamjamucho.pumpkin.LayoutState
 
 class MainScreenStates {
 
     class State1: LayoutState() {
-        init {
+        override fun onMakeState() {
 
-            change(R.id.title, R.id.title2) {
-                when (it.id) {
-                    R.id.title -> it.visibility = View.VISIBLE
-                    R.id.title2 -> it.visibility = View.INVISIBLE
-                }
+            changes {
+                change(R.id.title) { it.visibility = View.VISIBLE }
+                change(R.id.title2) { it.visibility = View.INVISIBLE }
             }.withTransition(Fade::class) {
-                duration = 1000
+                duration = 500
             }
 
             change(R.id.button) {
-                ViewCompat.offsetTopAndBottom(it, 100)
+                ViewCompat.offsetTopAndBottom(it, 1000)
             }.withTransition(ChangeBounds::class) {
-                duration = 1000
+                duration = 500
+                interpolator = AccelerateDecelerateInterpolator()
             }
+
         }
     }
 
     class State2: LayoutState() {
-        init {
+        override fun onMakeState() {
 
-            change(R.id.title, R.id.title2) {
-                when (it.id) {
-                    R.id.title -> it.visibility = View.INVISIBLE
-                    R.id.title2 -> it.visibility = View.VISIBLE
-                }
+            changes {
+                change(R.id.title) { it.visibility = View.INVISIBLE }
+                change(R.id.title2) { it.visibility = View.VISIBLE }
             }.withTransition(Fade::class) {
-                duration = 1000
+                duration = 500
             }
 
             change(R.id.button) {
-                ViewCompat.offsetTopAndBottom(it, -100)
+                ViewCompat.offsetTopAndBottom(it, -1000)
             }.withTransition(ChangeBounds::class) {
-                duration = 1000
+                duration = 500
+                interpolator = AccelerateDecelerateInterpolator()
             }
+
         }
     }
 }

@@ -12,72 +12,61 @@ import kotlin.reflect.KClass
 
 abstract class LayoutState {
 
-    private val tag = LayoutState::class.java.name
+    companion object {
+        private const val TAG = "LayoutState"
+    }
 
-    private val changesWithTargets =
-        mutableListOf<Pair<(view: View) -> Unit, Set<Int>>>()
-
+    private val transitionConfigs = mutableListOf<TransitionConfig>()
     private val transitions = mutableListOf<Transition>()
+    private val changes = mutableListOf<BaseChange>()
 
+    internal fun setup() {
+        transitionConfigs.clear()
+        transitions.clear()
+        changes.clear()
+        // Use change() or changes() methods in onMakeState() method
+        // to create objects of Change, Changes or TransitionConfig.
+        onMakeState()
+        transitionConfigs
+            .compress { a, b -> a.mergeWith(b) }
+            .forEach { transitions.addIfNotNull(it.makeConfiguredTransition()) }
+        transitionConfigs.clear()
+    }
+
+    // Call setup() method before call this.
     internal fun getTargetIds()
-            = changesWithTargets.flatMap { it.second }.toSet()
+            = changes.flatMap { it.targetIds }.toSet()
 
-    internal fun performTransition(manager: LayoutStateManager) {
-
+    // Call setup() method before call this.
+    internal fun applyChanges(manager: LayoutStateManager) {
         val sceneRoot = manager.getLayout()
-        sceneRoot ?: return
-        val transition = merge(transitions)
-        TransitionManager.beginDelayedTransition(sceneRoot, transition)
-        changesWithTargets.forEach {
-            val change = it.first
-            it.second.forEach { id ->
-                val view = manager.findViewBy(id)
-                if (view != null) change(view)
-            }
+        if (sceneRoot != null) {
+            val transition = merge(transitions)
+            TransitionManager.beginDelayedTransition(sceneRoot, transition)
+            applyChangesWithoutAnimation(manager)
         }
     }
 
-    // Use this method in init() method of a derived class.
+    // Call setup() method before call this.
+    internal fun applyChangesWithoutAnimation(manager: LayoutStateManager) {
+        changes.forEach { it.apply(manager) }
+    }
+
+    protected abstract fun onMakeState()
+
     protected fun change(
-        @IdRes vararg viewIds: Int,
-        modifier: (view: View) -> Unit): TransitionConfig {
-        changesWithTargets.add(modifier to viewIds.toSet())
-        return TransitionConfig(viewIds)
+        @IdRes vararg targetIds: Int,
+        modify: (view: View) -> Unit): Change {
+        val change = Change(targetIds.toSet(), modify)
+        changes.add(change)
+        return change
     }
 
-    private fun addTransition(transition: Transition) {
-        val same = findSameTransition(sameAs = transition)
-        if (same != null) same.targetIds.mergeWith(transition.targetIds)
-        else transitions.add(transition)
-    }
-
-    private fun findSameTransition(sameAs: Transition) = transitions.find {
-        it::class == sameAs::class &&
-                it.duration == sameAs.duration &&
-                it.interpolator == sameAs.interpolator
-    }
-
-    private fun instantiateTransitionOf(transitionClass: Class<out Transition>): Transition? {
-        try {
-            return transitionClass.getDeclaredConstructor().newInstance()
-
-        } catch (e: Exception) {
-
-            when {
-
-                (e is IllegalAccessException) or
-                        (e is NoSuchMethodException) ->
-                    Log.w(tag, "${transitionClass.name} does not has a public empty constructor.")
-
-                (e is InstantiationException) or
-                        (e is InvocationTargetException) -> {
-                    Log.w(tag, "Failed to instantiate ${transitionClass.name}")
-                    e.printStackTrace()
-                }
-            }
-
-            return null
-        }
+    protected fun changes(modify: Changes.() -> Unit): Changes {
+        val change = Changes()
+        modify(change)
+        changes.add(change)
+        return change
     }
 
     private fun merge(
@@ -89,38 +78,135 @@ abstract class LayoutState {
             ordering = TransitionSet.ORDERING_TOGETHER
         }.apply(setup)
 
-    private fun <T> MutableList<T>.mergeWith(other: List<T>) {
-        val merged = union(other)
-        clear()
-        addAll(merged)
+    private fun <T> MutableList<T>.compress(
+        merge: (a: T, b: T) -> T?): MutableList<T> {
+
+        var start = size - 1
+        while (0 < start) {
+            var index = start - 1
+            while (0 <= index) {
+                val merged = merge(get(start), get(index))
+                if (merged != null) {
+                    set(start, merged)
+                    removeAt(index)
+                    --start
+                }
+                --index
+            }
+            --start
+        }
+
+        return this
     }
 
-    /**
-     * This class will be used as a return value of change() method.
-     * Use this like:
-     *
-     * change(R.id.action_bar) {
-     *   ...
-     * }.withTransition(ChangeBounds::class) {
-     *   duration = 400
-     *   interpolator = LinearInterpolator()
-     * }
-     */
-    inner class TransitionConfig(private val targets: IntArray) {
+    private fun <T> MutableList<T>.addIfNotNull(value: T?) {
+        if (value != null) add(value)
+    }
 
-        var interpolator: Interpolator? = null
-        var duration: Long? = null
+    abstract inner class BaseChange {
+
+        internal abstract val targetIds: Set<Int>
 
         fun withTransition(
-            transitionClass: KClass<out Transition>,
-            configure: TransitionConfig.() -> Unit = {}) {
+            type: KClass<out Transition>,
+            configure: TransitionConfig.() -> Unit) {
+            val config = TransitionConfig(type, targetIds)
+            configure(config)
+            transitionConfigs.add(config)
+        }
 
-            configure(this)
-            val transition = instantiateTransitionOf(transitionClass.java)
-            targets.forEach { transition?.addTarget(it) }
-            if (interpolator != null) transition?.interpolator = interpolator
-            if (duration != null) transition?.duration = duration!!
-            if (transition != null) addTransition(transition)
+        internal abstract fun apply(manager: LayoutStateManager)
+    }
+
+    inner class Change(
+        override val targetIds: Set<Int>,
+        private val modify: (view: View) -> Unit): BaseChange() {
+
+        override fun apply(manager: LayoutStateManager) {
+            targetIds.forEach {
+                val view = manager.findViewBy(it)
+                if (view != null) modify(view)
+            }
+        }
+    }
+
+    inner class Changes: BaseChange() {
+
+        override val targetIds: Set<Int>
+            get() = innerChanges.flatMap { it.targetIds }.toSet()
+
+        private val innerChanges = mutableListOf<BaseChange>()
+
+        override fun apply(manager: LayoutStateManager) {
+            innerChanges.forEach { it.apply(manager) }
+        }
+
+        fun change(
+            @IdRes vararg targetIds: Int,
+            modify: (view: View) -> Unit): Change {
+            val change = Change(targetIds.toSet(), modify)
+            innerChanges.add(change)
+            return change
+        }
+
+        fun changes(modify: Changes.() -> Unit): Changes {
+            val change = Changes()
+            modify(change)
+            innerChanges.add(change)
+            return change
+        }
+    }
+
+    class TransitionConfig(
+
+        internal val type: KClass<out Transition>,
+
+        internal val targetIds: Set<Int>) {
+
+        var interpolator: Interpolator? = null
+
+        var duration: Long? = null
+
+        internal fun mergeWith(other: TransitionConfig) =
+            if (isSameAs(other)) {
+                TransitionConfig(type, targetIds.union(other.targetIds)).apply {
+                    duration = this@TransitionConfig.duration
+                    interpolator = this@TransitionConfig.interpolator
+                }
+            } else null
+
+        internal fun makeConfiguredTransition() =
+            instantiateTransitionOf(type.java)?.apply {
+                if (this@TransitionConfig.interpolator != null) interpolator = this@TransitionConfig.interpolator
+                if (this@TransitionConfig.duration != null) duration = this@TransitionConfig.duration!!
+            }
+
+        private fun isSameAs(other: TransitionConfig)
+                = type == other.type
+                && interpolator == other.interpolator
+                && duration == other.duration
+
+        private fun instantiateTransitionOf(transitionClass: Class<out Transition>): Transition? {
+            try {
+                return transitionClass.getDeclaredConstructor().newInstance()
+
+            } catch (e: Exception) {
+
+                when {
+
+                    (e is IllegalAccessException) or
+                            (e is NoSuchMethodException) ->
+                        Log.w(TAG, "${transitionClass.name} does not has a public empty constructor.")
+
+                    (e is InstantiationException) or
+                            (e is InvocationTargetException) -> {
+                        Log.w(TAG, "Failed to instantiate ${transitionClass.name}")
+                        e.printStackTrace()
+                    }
+                }
+
+                return null
+            }
         }
     }
 }
