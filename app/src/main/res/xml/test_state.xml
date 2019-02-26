@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LayoutState>
+    <change
+        target="view-id"
+        property="property-name"
+        newValue="new-value"
+        valueType="float|int|color"
+        transition="full-class-name"/>
+</LayoutState>

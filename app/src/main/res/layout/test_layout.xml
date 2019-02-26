@@ -2,62 +2,36 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:background="#0e0e0e"
->
+             android:id="@+id/rootView">
 
-    <com.jamjamucho.belfry.AnimationMenuIcon
-            android:id="@+id/optionsIcon"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    <com.jamjamucho.belfry.AnimationOptionsIcon
-            android:id="@+id/animOptionsIcon"
-            android:layout_gravity="center"
-            android:layout_marginTop="48dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    <!--<ImageView-->
-            <!--android:id="@+id/menuIcon"-->
-            <!--android:layout_width="24dp"-->
-            <!--android:layout_height="24dp"-->
-            <!--android:src="@drawable/ic_menu"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="88dp"-->
-    <!--/>-->
-
-    <!--<ImageView-->
-            <!--android:id="@+id/closeIcon"-->
-            <!--android:layout_width="24dp"-->
-            <!--android:layout_height="24dp"-->
-            <!--android:src="@drawable/ic_close"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="88dp"-->
-    <!--/>-->
-
-    <!--<ImageView-->
-            <!--android:id="@+id/optionIcon"-->
-            <!--android:layout_width="24dp"-->
-            <!--android:layout_height="24dp"-->
-            <!--android:src="@drawable/ic_options"-->
-            <!--android:layout_gravity="center"-->
-    <!--/>-->
-
-    <!--<ImageView-->
-            <!--android:id="@+id/closeIcon2"-->
-            <!--android:layout_width="24dp"-->
-            <!--android:layout_height="24dp"-->
-            <!--android:src="@drawable/ic_close"-->
-            <!--android:layout_gravity="center"-->
-    <!--/>-->
-
-    <Button
+    <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button"
+            android:text="@string/app_name"
+            android:layout_gravity="center"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:textSize="32sp"
+            android:typeface="monospace"/>
+    <TextView
+            android:id="@+id/title2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="48dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:textSize="32sp"
+            android:typeface="monospace"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="24dp"
+            android:id="@+id/button"
+    />
 
 </FrameLayout>
