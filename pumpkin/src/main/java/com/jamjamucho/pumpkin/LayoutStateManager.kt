@@ -2,6 +2,7 @@ package com.jamjamucho.pumpkin
 
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.reflect.KClass
@@ -44,6 +45,16 @@ class LayoutStateManager private constructor(
 
     fun goImmediately(state: KClass<out LayoutState>) {
         states[state]?.applyChangesWithoutAnimation(this)
+    }
+
+    fun postState(state: KClass<out LayoutState>) {
+        layout.get()?.viewTreeObserver?.addOnGlobalLayoutListener(
+            object: ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    layout.get()?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                    goImmediately(state)
+                }
+            })
     }
 
     internal fun findViewBy(id: Int) = targets[id]?.get()

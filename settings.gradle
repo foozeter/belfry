@@ -1,1 +1,1 @@
-include ':app', ':jam', ':smile', ':pumpkin'
+include ':app', ':pumpkin'

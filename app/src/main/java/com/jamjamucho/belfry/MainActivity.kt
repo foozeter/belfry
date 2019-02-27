@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        stateManager.postState(MainScreenStates.State1::class)
+
 //        setContentView(R.layout.activity_main)
 //        val smile = Smile(R.xml.test_animator_associating, rootView)
 
@@ -41,5 +43,5 @@ class MainActivity : AppCompatActivity() {
 //                    SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 //        }
 
-   }
+    }
 }
