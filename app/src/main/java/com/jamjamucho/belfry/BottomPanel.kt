@@ -8,7 +8,6 @@ import android.graphics.Path
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import kotlin.math.abs
 
 class BottomPanel(
     context: Context, attrs: AttributeSet)
@@ -20,6 +19,9 @@ class BottomPanel(
         private const val DEFAULT_CONCAVE_BACKGROUND_COLOR = Color.TRANSPARENT
     }
 
+    // This will be initialized in onLayout() method.
+    private var collapsedTop = 0
+
     private var isCornerRadiusChanged = true
 
     private val peekHeight: Int
@@ -30,8 +32,6 @@ class BottomPanel(
         style = Paint.Style.FILL
         isAntiAlias = true
     }
-
-    val baseCornerRadius: Float
 
     var cornerRadius = 0f
         private set(radius) {
@@ -45,20 +45,6 @@ class BottomPanel(
             }
         }
 
-    var cornerRadiusFraction: Float
-        get() = if (abs(baseCornerRadius) == 0f) 0f else cornerRadius / baseCornerRadius
-        set(fraction) {
-            cornerRadius = baseCornerRadius * fraction
-        }
-
-    var xFraction: Float
-        get() = if (abs(left) == 0) 0f else x / left
-        set(fraction) { x = left * fraction }
-
-    var yFraction: Float
-        get() = if (abs(top) == 0) 0f else y / top
-        set(fraction) { y = top * fraction }
-
     init {
 
         val a = context.obtainStyledAttributes(attrs, R.styleable.BottomPanel, 0, 0)
@@ -69,12 +55,10 @@ class BottomPanel(
 
         val density = context.resources.displayMetrics.density
 
-        baseCornerRadius = a.getDimensionPixelSize(
+        cornerRadius = a.getDimensionPixelSize(
             R.styleable.BottomPanel_belfry_cornerRadius,
             (density * DEFAULT_CONCAVE_RADIUS).toInt())
             .toFloat()
-
-        cornerRadius = baseCornerRadius
 
         peekHeight = a.getDimensionPixelSize(
             R.styleable.BottomPanel_belfry_peekHeight,
@@ -101,11 +85,20 @@ class BottomPanel(
         super.onLayout(changed, left, top, right, bottom)
         val offset = bottom - peekHeight - this.top
         ViewCompat.offsetTopAndBottom(this, offset)
+        collapsedTop = this.top
+    }
+
+    fun expand() {
+        ViewCompat.offsetTopAndBottom(this, -top)
+    }
+
+    fun collapse() {
+        ViewCompat.offsetTopAndBottom(this, collapsedTop - top)
     }
 
     private fun makeOutlinePath() {
         val notChanged = !isCornerRadiusChanged
-        val radius = cornerRadius * cornerRadiusFraction
+        val radius = cornerRadius
         isCornerRadiusChanged = false
         when {
 

@@ -26,11 +26,13 @@
                 android:background="#ffffff">
             <com.jamjamucho.belfry.AnimationMenuIcon
                     style="@style/AppBarIcon"
-                    android:id="@+id/menuIcon"/>
+                    android:id="@+id/menuIcon"
+                    app:belfry_iconTint="#000000"/>
             <com.jamjamucho.belfry.AnimationOptionsIcon
                     style="@style/AppBarIcon"
                     android:id="@+id/optionsIcon"
-                    android:layout_gravity="end"/>
+                    android:layout_gravity="end"
+                    app:belfry_iconTint="#000000"/>
         </FrameLayout>
 
     </com.jamjamucho.belfry.BottomPanel>
@@ -42,11 +44,5 @@
             android:background="@drawable/home_round_rectangle_button_background"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="32dp"/>
-
-    <!-- INLINE ANIMATORS -->
-
-    <!--<com.jamjamucho.jam.inline.Config-->
-            <!--style="@style/JamInline"-->
-            <!--app:jam_defaultStateList="@xml/test_animator_associating"/>-->
 
 </FrameLayout>

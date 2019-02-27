@@ -1,7 +1,12 @@
 package com.jamjamucho.belfry
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Color
 import android.support.annotation.DrawableRes
+import android.support.transition.Transition
+import android.support.transition.TransitionValues
 import android.support.v4.math.MathUtils
 import android.util.AttributeSet
 import android.view.Gravity
@@ -42,6 +47,9 @@ abstract class AnimationIcon(
     }
 
     init {
+        val attrs = context.obtainStyledAttributes(attributeSet, R.styleable.AnimationIcon, 0, 0)
+        setColorFilter(attrs.getColor(R.styleable.AnimationIcon_belfry_iconTint, Color.BLACK))
+        attrs.recycle()
         addView(backIcon)
         addView(frontIcon)
     }
@@ -71,5 +79,44 @@ abstract class AnimationIcon(
     fun setColorFilter(color: Int) {
         frontIcon.setColorFilter(color)
         backIcon.setColorFilter(color)
+    }
+
+    class ChangeProgress: Transition() {
+
+        companion object {
+            private const val PROP_PROGRESS = "com.jamjamucho.belfry:AnimationIcon.ChangeProgress:progress"
+        }
+
+        override fun captureStartValues(transitionValues: TransitionValues)
+                = captureValues(transitionValues)
+
+        override fun captureEndValues(transitionValues: TransitionValues)
+                = captureValues(transitionValues)
+
+        private fun captureValues(transitionValues: TransitionValues) {
+            val view = transitionValues.view
+            if (view is AnimationIcon) {
+                transitionValues.values[PROP_PROGRESS] = view.progress
+            }
+        }
+
+        override fun createAnimator(
+            sceneRoot: ViewGroup,
+            startValues: TransitionValues?,
+            endValues: TransitionValues?): Animator? {
+            startValues ?: return null
+            endValues ?: return null
+            val start = startValues.values[PROP_PROGRESS] as? Float
+            val end = endValues.values[PROP_PROGRESS] as? Float
+            start ?: return null
+            end ?: return null
+            val view = startValues.view as? AnimationIcon
+            view ?: return null
+            return ValueAnimator.ofFloat(start, end).apply {
+                addUpdateListener {
+                    view.progress = it.animatedValue as Float
+                }
+            }
+        }
     }
 }
