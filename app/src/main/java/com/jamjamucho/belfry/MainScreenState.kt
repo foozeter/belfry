@@ -7,13 +7,13 @@ import kotlin.reflect.KClass
 
 class MainScreenState(layout: ViewGroup) {
 
-    private class Default(
-        val bottomPanelCornerRadius: Float)
-        : LayoutState() {
+    private class Default : LayoutState() {
 
         override fun onMakeState() {
 
-            changeTranslationY(R.id.bottomPanel) {
+            changeTranslationY(
+                R.id.bottomPanel,
+                R.id.bottomPanelTopEdge) {
                 it.translationY = 0f
             }
 
@@ -28,16 +28,16 @@ class MainScreenState(layout: ViewGroup) {
         }
     }
 
-    private class ShowingMenu(
-        val bottomPanelCornerRadius: Float)
-        : LayoutState() {
+    private class ShowingMenu: LayoutState() {
 
         override fun onMakeState() {
 
             changeY(
                 R.id.bottomPanel,
-                R.id.bottomPanelContentScroller
-            ) { it.y = 0f }
+                R.id.bottomPanelTopEdge,
+                R.id.bottomPanelContentScroller) {
+                it.y = 0f
+            }
 
             changeAlpha(R.id.menu, R.id.options) {
                 it.alpha = if (it.id == R.id.menu) 1f else 0f
@@ -53,16 +53,16 @@ class MainScreenState(layout: ViewGroup) {
         }
     }
 
-    private class ShowingOptions(
-        val bottomPanelCornerRadius: Float)
-        : LayoutState() {
+    private class ShowingOptions: LayoutState() {
 
         override fun onMakeState() {
 
             changeY(
                 R.id.bottomPanel,
-                R.id.bottomPanelContentScroller
-            ) { it.y = 0f }
+                R.id.bottomPanelTopEdge,
+                R.id.bottomPanelContentScroller) {
+                it.y = 0f
+            }
 
             changeAlpha(R.id.menu, R.id.options) {
                 it.alpha = if (it.id == R.id.options) 1f else 0f
@@ -89,9 +89,9 @@ class MainScreenState(layout: ViewGroup) {
     private val stateManager =
         LayoutStateManager
             .setupWith(layout)
-            .addState(Default(layout.context.resources.getDimensionPixelSize(R.dimen.main_collapsed_bottom_panel_corner_radius).toFloat()))
-            .addState(ShowingMenu(layout.context.resources.getDimensionPixelSize(R.dimen.main_expanded_bottom_panel_corner_radius).toFloat()))
-            .addState(ShowingOptions(layout.context.resources.getDimensionPixelSize(R.dimen.main_expanded_bottom_panel_corner_radius).toFloat()))
+            .addState(Default())
+            .addState(ShowingMenu())
+            .addState(ShowingOptions())
             .build()
 
     init {

@@ -9,4 +9,13 @@
     <declare-styleable name="AnimatableIcon">
         <attr name="belfry_iconTint" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="DentedEdge">
+        <attr name="belfry_tint" format="color"/>
+        <attr name="belfry_startShadowColor" format="color"/>
+        <attr name="belfry_endShadowColor" format="color"/>
+        <attr name="belfry_shadowSize" format="dimension"/>
+        <attr name="belfry_curveRadius" format="dimension"/>
+        <attr name="belfry_anchorTo" format="reference"/>
+    </declare-styleable>
 </resources>

@@ -1,37 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:id="@+id/rootView">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:clipChildren="false"
+                android:id="@+id/rootView">
 
-    <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:layout_gravity="center"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            android:textSize="32sp"
-            android:typeface="monospace"/>
-    <TextView
-            android:id="@+id/title2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:visibility="invisible"
-            android:textSize="32sp"
-            android:typeface="monospace"/>
+<com.jamjamucho.belfry.DentedEdge
+        android:id="@+id/edge"
+        android:layout_above="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:belfry_curveRadius="24dp"
+        app:belfry_shadowSize="5dp"
+        app:belfry_startShadowColor="#11000000"
+        app:belfry_endShadowColor="#00000000"
+/>
 
-    <Button android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="24dp"
-            android:id="@+id/button"
-    />
+<View android:layout_width="match_parent" android:layout_height="56dp"
+      android:background="#ffffff"
+      android:id="@+id/view"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentStart="true" android:layout_marginBottom="0dp"/>
 
-</FrameLayout>
+        </RelativeLayout>
