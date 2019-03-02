@@ -13,22 +13,49 @@
             android:id="@+id/bottomPanel"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:belfry_cornerRadius="-16dp"
-            app:belfry_backgroundColor="#ffffff"
-            app:belfry_peekHeight="72dp"
-            android:paddingTop="16dp">
+            android:background="#ffffff"
+            app:belfry_peekHeight="@dimen/main_bottom_panel_peek_height">
+
+        <!-- BOTTOM PANEL CONTENTS -->
+
+        <android.support.v4.widget.NestedScrollView
+                android:id="@+id/bottomPanelContentScroller"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <FrameLayout
+                    android:id="@+id/bottomPanelContentContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/main_app_bar_height">
+
+                <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                          android:text="@string/large_text"
+                          android:padding="16dp"
+                      android:id="@+id/menu"/>
+
+                <TextView android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:text="@string/large_text2"
+                          android:padding="16dp"
+                          android:id="@+id/options"/>
+
+            </FrameLayout>
+
+        </android.support.v4.widget.NestedScrollView>
 
         <!-- APP BAR -->
         <FrameLayout
                 android:id="@+id/appBar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/main_app_bar_height"
                 android:background="#ffffff">
-            <com.jamjamucho.belfry.AnimationMenuIcon
+            <com.jamjamucho.belfry.AnimatableMenuIcon
                     style="@style/AppBarIcon"
                     android:id="@+id/menuIcon"
                     app:belfry_iconTint="#000000"/>
-            <com.jamjamucho.belfry.AnimationOptionsIcon
+            <com.jamjamucho.belfry.AnimatableOptionsIcon
                     style="@style/AppBarIcon"
                     android:id="@+id/optionsIcon"
                     android:layout_gravity="end"

@@ -6,7 +6,7 @@
         <attr name="belfry_peekHeight" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="AnimationIcon">
+    <declare-styleable name="AnimatableIcon">
         <attr name="belfry_iconTint" format="color"/>
     </declare-styleable>
 </resources>

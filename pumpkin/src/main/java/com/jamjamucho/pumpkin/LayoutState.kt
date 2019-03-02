@@ -4,6 +4,7 @@ import android.support.annotation.IdRes
 import android.support.transition.*
 import android.view.View
 import android.view.animation.Interpolator
+import com.jamjamucho.pumpkin.transition.*
 
 abstract class LayoutState {
 
@@ -14,10 +15,13 @@ abstract class LayoutState {
 
     private var setupIsNotFinished = true
 
+    private lateinit var parent: LayoutStateManager
+
     private val superChange = ChangeTogether()
 
-    internal fun setup() {
+    internal fun setup(parent: LayoutStateManager) {
         if (setupIsNotFinished) {
+            this.parent = parent
             onMakeState()
             setupIsNotFinished = false
         }
@@ -27,17 +31,17 @@ abstract class LayoutState {
     internal fun getTargetIds() = superChange.getTargetIds()
 
     // Call setup() method before call this.
-    internal fun applyChanges(manager: LayoutStateManager) {
-        val sceneRoot = manager.getLayout()
+    internal fun applyChanges() {
+        val sceneRoot = parent.getLayout()
         val transition = superChange.getTransition()
         if (sceneRoot != null && transition != null)
             TransitionManager.beginDelayedTransition(sceneRoot, transition)
-        applyChangesWithoutAnimation(manager)
+        applyChangesWithoutAnimation()
     }
 
     // Call setup() method before call this.
-    internal fun applyChangesWithoutAnimation(manager: LayoutStateManager) {
-        superChange.apply(manager)
+    internal fun applyChangesWithoutAnimation() {
+        superChange.apply()
     }
 
     protected abstract fun onMakeState()
@@ -57,6 +61,9 @@ abstract class LayoutState {
     protected fun change(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
             = change(targetIds.asIterable(), modify)
 
+    protected fun changeFade(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(Fade())
+
     protected fun changeFadeIn(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
             = change(targetIds.asIterable(), modify).with(Fade(Fade.IN))
 
@@ -66,13 +73,28 @@ abstract class LayoutState {
     protected fun changeBounds(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
             = change(targetIds.asIterable(), modify).with(ChangeBounds())
 
-    abstract class IChange {
+    protected fun changeX(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(ChangeX())
+
+    protected fun changeY(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(ChangeY())
+
+    protected fun changeTranslationX(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(ChangeTranslationX())
+
+    protected fun changeTranslationY(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(ChangeTranslationY())
+
+    protected fun changeAlpha(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+            = change(targetIds.asIterable(), modify).with(ChangeAlpha())
+
+    abstract inner class IChange {
         internal abstract fun getTargetIds(): Iterable<Int>
         internal abstract fun getTransition(): Transition?
-        internal abstract fun apply(manager: LayoutStateManager)
+        internal abstract fun apply()
     }
 
-    class Change(
+    inner class Change(
 
         private val targetIds: Iterable<Int>,
 
@@ -84,21 +106,37 @@ abstract class LayoutState {
 
         override fun getTransition() = transition
 
-        override fun apply(manager: LayoutStateManager) {
+        override fun apply() {
             targetIds.forEach {
-                val view = manager.findViewBy(it)
+                val view = parent.findViewBy(it)
                 if (view != null) modify(view)
             }
         }
 
         fun with(transition: Transition,
-                 configure: Transition.() -> Unit = {}) {
+                 configure: Transition.() -> Unit = {}): Change {
             this.transition = transition
             configure(transition)
+            return this
+        }
+
+        fun after(doAfter: (view: View) -> Unit) {
+            transition?.addListener(object: Transition.TransitionListener {
+                override fun onTransitionResume(transition: Transition) {}
+                override fun onTransitionPause(transition: Transition) {}
+                override fun onTransitionCancel(transition: Transition) {}
+                override fun onTransitionStart(transition: Transition) {}
+                override fun onTransitionEnd(transition: Transition) {
+                    targetIds.forEach {
+                        val view = parent.findViewBy(it)
+                        if (view != null) doAfter(view)
+                    }
+                }
+            })
         }
     }
 
-    abstract class Changes: IChange() {
+    abstract inner class Changes: IChange() {
 
         private val innerChanges = mutableListOf<IChange>()
         private val sharedTransitionConfig = TransitionConfig()
@@ -117,8 +155,8 @@ abstract class LayoutState {
             return if (set.transitionCount != 0) set else null
         }
 
-        final override fun apply(manager: LayoutStateManager) {
-            innerChanges.forEach { it.apply(manager) }
+        final override fun apply() {
+            innerChanges.forEach { it.apply() }
         }
 
         protected abstract fun getOrdering(): Int
@@ -155,6 +193,9 @@ abstract class LayoutState {
             configure(sharedTransitionConfig)
         }
 
+        fun changeFade(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(Fade())
+
         fun changeFadeIn(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
                 = change(targetIds.asIterable(), modify).with(Fade(Fade.IN))
 
@@ -163,9 +204,24 @@ abstract class LayoutState {
 
         fun changeBounds(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
                 = change(targetIds.asIterable(), modify).with(ChangeBounds())
+
+        fun changeX(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(ChangeX())
+
+        fun changeY(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(ChangeY())
+
+        fun changeTranslationX(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(ChangeTranslationX())
+
+        fun changeTranslationY(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(ChangeTranslationY())
+
+        fun changeAlpha(@IdRes vararg targetIds: Int, modify: (view: View) -> Unit)
+                = change(targetIds.asIterable(), modify).with(ChangeAlpha())
     }
 
-    class ChangeTogether: Changes() {
+    inner class ChangeTogether: Changes() {
 
         override fun getOrdering() = TransitionSet.ORDERING_TOGETHER
 
@@ -175,7 +231,7 @@ abstract class LayoutState {
         }
     }
 
-    class ChangeSequentially: Changes() {
+    inner class ChangeSequentially: Changes() {
 
         override fun getOrdering() = TransitionSet.ORDERING_SEQUENTIAL
 

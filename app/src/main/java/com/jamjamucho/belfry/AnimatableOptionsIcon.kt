@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 
-class AnimationOptionsIcon(
+class AnimatableOptionsIcon(
     context: Context, attributeSet: AttributeSet)
-    : AnimationIcon(R.drawable.ic_close, R.drawable.ic_options, context, attributeSet) {
+    : AnimatableIcon(R.drawable.ic_close, R.drawable.ic_options, context, attributeSet) {
 
     override fun onProgressChanged(progress: Float, front: ImageView, back: ImageView) {
         back.scaleX = progress

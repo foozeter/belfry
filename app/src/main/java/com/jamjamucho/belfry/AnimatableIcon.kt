@@ -15,7 +15,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 
-abstract class AnimationIcon(
+abstract class AnimatableIcon(
     @DrawableRes backIconRes: Int,
     @DrawableRes frontIconRes: Int,
     context: Context, attributeSet: AttributeSet)
@@ -47,8 +47,8 @@ abstract class AnimationIcon(
     }
 
     init {
-        val attrs = context.obtainStyledAttributes(attributeSet, R.styleable.AnimationIcon, 0, 0)
-        setColorFilter(attrs.getColor(R.styleable.AnimationIcon_belfry_iconTint, Color.BLACK))
+        val attrs = context.obtainStyledAttributes(attributeSet, R.styleable.AnimatableIcon, 0, 0)
+        setColorFilter(attrs.getColor(R.styleable.AnimatableIcon_belfry_iconTint, Color.BLACK))
         attrs.recycle()
         addView(backIcon)
         addView(frontIcon)
@@ -84,7 +84,7 @@ abstract class AnimationIcon(
     class ChangeProgress: Transition() {
 
         companion object {
-            private const val PROP_PROGRESS = "com.jamjamucho.belfry:AnimationIcon.ChangeProgress:progress"
+            private const val PROP_PROGRESS = "com.jamjamucho.belfry:AnimatableIcon.ChangeProgress:progress"
         }
 
         override fun captureStartValues(transitionValues: TransitionValues)
@@ -95,7 +95,7 @@ abstract class AnimationIcon(
 
         private fun captureValues(transitionValues: TransitionValues) {
             val view = transitionValues.view
-            if (view is AnimationIcon) {
+            if (view is AnimatableIcon) {
                 transitionValues.values[PROP_PROGRESS] = view.progress
             }
         }
@@ -110,7 +110,7 @@ abstract class AnimationIcon(
             val end = endValues.values[PROP_PROGRESS] as? Float
             start ?: return null
             end ?: return null
-            val view = startValues.view as? AnimationIcon
+            val view = startValues.view as? AnimatableIcon
             view ?: return null
             return ValueAnimator.ofFloat(start, end).apply {
                 addUpdateListener {

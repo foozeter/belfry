@@ -19,7 +19,7 @@ class LayoutStateManager private constructor(
 
     init {
 
-        states.forEach { it.value.setup() }
+        states.forEach { it.value.setup(this) }
 
         val targetIds = states.values
             .flatMap { it.getTargetIds() }
@@ -40,11 +40,11 @@ class LayoutStateManager private constructor(
     }
 
     fun go(state: KClass<out LayoutState>) {
-        states[state]?.applyChanges(this)
+        states[state]?.applyChanges()
     }
 
     fun goImmediately(state: KClass<out LayoutState>) {
-        states[state]?.applyChangesWithoutAnimation(this)
+        states[state]?.applyChangesWithoutAnimation()
     }
 
     fun postState(state: KClass<out LayoutState>) {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="main_collapsed_bottom_panel_corner_radius">-16dp</dimen>
+    <dimen name="main_expanded_bottom_panel_corner_radius">0dp</dimen>
+    <dimen name="main_bottom_panel_peek_height">56dp</dimen>
+    <dimen name="main_app_bar_height">56dp</dimen>
+</resources>

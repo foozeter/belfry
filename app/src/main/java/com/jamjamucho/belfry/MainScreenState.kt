@@ -7,50 +7,73 @@ import kotlin.reflect.KClass
 
 class MainScreenState(layout: ViewGroup) {
 
-    private class Default: LayoutState() {
+    private class Default(
+        val bottomPanelCornerRadius: Float)
+        : LayoutState() {
+
         override fun onMakeState() {
 
-            changeBounds(R.id.bottomPanel) {
-                (it as BottomPanel).collapse()
+            changeTranslationY(R.id.bottomPanel) {
+                it.translationY = 0f
+            }
+
+            changeY(R.id.bottomPanelContentScroller) {
+                it.y = it.height / 2f
             }
 
             change(R.id.menuIcon, R.id.optionsIcon) {
-                (it as AnimationIcon).progress = 0f
-            }.with(AnimationIcon.ChangeProgress())
+                (it as AnimatableIcon).progress = 0f
+            }.with(AnimatableIcon.ChangeProgress())
 
         }
     }
 
-    private class ShowingMenu: LayoutState() {
+    private class ShowingMenu(
+        val bottomPanelCornerRadius: Float)
+        : LayoutState() {
+
         override fun onMakeState() {
 
-            changeBounds(R.id.bottomPanel) {
-                (it as BottomPanel).expand()
+            changeY(
+                R.id.bottomPanel,
+                R.id.bottomPanelContentScroller
+            ) { it.y = 0f }
+
+            changeAlpha(R.id.menu, R.id.options) {
+                it.alpha = if (it.id == R.id.menu) 1f else 0f
             }
 
             change(R.id.menuIcon, R.id.optionsIcon) {
                 when (it) {
-                    is AnimationMenuIcon -> it.progress = 1f
-                    is AnimationOptionsIcon -> it.progress = 0f
+                    is AnimatableMenuIcon -> it.progress = 1f // to close icon
+                    is AnimatableOptionsIcon -> it.progress = 0f // to options icon
                 }
-            }.with(AnimationIcon.ChangeProgress())
+            }.with(AnimatableIcon.ChangeProgress())
 
         }
     }
 
-    private class ShowingOptions: LayoutState() {
+    private class ShowingOptions(
+        val bottomPanelCornerRadius: Float)
+        : LayoutState() {
+
         override fun onMakeState() {
 
-            changeBounds(R.id.bottomPanel) {
-                (it as BottomPanel).expand()
+            changeY(
+                R.id.bottomPanel,
+                R.id.bottomPanelContentScroller
+            ) { it.y = 0f }
+
+            changeAlpha(R.id.menu, R.id.options) {
+                it.alpha = if (it.id == R.id.options) 1f else 0f
             }
 
             change(R.id.menuIcon, R.id.optionsIcon) {
                 when (it) {
-                    is AnimationMenuIcon -> it.progress = 0f
-                    is AnimationOptionsIcon -> it.progress = 1f
+                    is AnimatableMenuIcon -> it.progress = 0f // to menu icon
+                    is AnimatableOptionsIcon -> it.progress = 1f // to close icon
                 }
-            }.with(AnimationIcon.ChangeProgress())
+            }.with(AnimatableIcon.ChangeProgress())
 
         }
     }
@@ -66,9 +89,9 @@ class MainScreenState(layout: ViewGroup) {
     private val stateManager =
         LayoutStateManager
             .setupWith(layout)
-            .addState(Default())
-            .addState(ShowingMenu())
-            .addState(ShowingOptions())
+            .addState(Default(layout.context.resources.getDimensionPixelSize(R.dimen.main_collapsed_bottom_panel_corner_radius).toFloat()))
+            .addState(ShowingMenu(layout.context.resources.getDimensionPixelSize(R.dimen.main_expanded_bottom_panel_corner_radius).toFloat()))
+            .addState(ShowingOptions(layout.context.resources.getDimensionPixelSize(R.dimen.main_expanded_bottom_panel_corner_radius).toFloat()))
             .build()
 
     init {

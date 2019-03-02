@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
 
-class AnimationMenuIcon(
+class AnimatableMenuIcon(
     context: Context, attributeSet: AttributeSet)
-    : AnimationIcon(R.drawable.ic_close, R.drawable.ic_menu, context, attributeSet) {
+    : AnimatableIcon(R.drawable.ic_close, R.drawable.ic_menu, context, attributeSet) {
 
     override fun onProgressChanged(progress: Float, front: ImageView, back: ImageView) {
         front.rotation = -45f * progress
